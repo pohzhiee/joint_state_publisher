@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Standard Python imports
 import argparse
@@ -14,6 +14,7 @@ import xml.dom.minidom
 import rclpy
 import rclpy.parameter
 import sensor_msgs.msg
+from rclpy.qos import qos_profile_sensor_data
 
 # Python QT Binding imports
 from python_qt_binding.QtCore import pyqtSlot
@@ -152,7 +153,7 @@ class JointStatePublisher():
         else:
             self.init_urdf(robot)
 
-        use_gui = self.get_param('use_gui', False)
+        use_gui = self.get_param('use_gui', True)
 
         if use_gui:
             num_rows = self.get_param('num_rows', 0)
@@ -167,7 +168,7 @@ class JointStatePublisher():
         for source in source_list:
             self.sources.append(self.node.create_subscription(sensor_msgs.msg.JointState, source, self.source_cb))
 
-        self.pub = self.node.create_publisher(sensor_msgs.msg.JointState, 'joint_states')
+        self.pub = self.node.create_publisher(sensor_msgs.msg.JointState, 'joint_states', qos_profile=qos_profile_sensor_data)
 
     def source_cb(self, msg):
         for i in range(len(msg.name)):
@@ -493,7 +494,7 @@ def main(input_args=None):
     with open(parsed_args.urdf_file, 'r') as infp:
         urdf = infp.read()
 
-    node = rclpy.create_node('joint_state_publisher')
+    node = rclpy.create_node('joint_state_publisher', allow_undeclared_parameters=True)
     jsp = JointStatePublisher(node, urdf)
 
     if jsp.gui is None:
