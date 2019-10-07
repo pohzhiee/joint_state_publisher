@@ -14,7 +14,7 @@ import xml.dom.minidom
 import rclpy
 import rclpy.parameter
 import sensor_msgs.msg
-from rclpy.qos import qos_profile_sensor_data
+from rclpy.qos import qos_profile_system_default
 
 # Python QT Binding imports
 from python_qt_binding.QtCore import pyqtSlot
@@ -168,7 +168,7 @@ class JointStatePublisher():
         for source in source_list:
             self.sources.append(self.node.create_subscription(sensor_msgs.msg.JointState, source, self.source_cb))
 
-        self.pub = self.node.create_publisher(sensor_msgs.msg.JointState, 'joint_states', qos_profile=qos_profile_sensor_data)
+        self.pub = self.node.create_publisher(sensor_msgs.msg.JointState, 'joint_states', qos_profile=qos_profile_system_default)
 
     def source_cb(self, msg):
         for i in range(len(msg.name)):
